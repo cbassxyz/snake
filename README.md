@@ -1,5 +1,9 @@
 # Classic Snake
+
+<img src="./media/demo.gif"/>
+
 A implementation of Snake inside Rust
+
 Based on Paulo Henrique Cuchi's writeup [here](https://blog.logrocket.com/using-sdl2-bindings-rust/#setting-up-rust-sdl2-project)
 
 ### Features
@@ -17,7 +21,8 @@ Based on Paulo Henrique Cuchi's writeup [here](https://blog.logrocket.com/using-
 - **Space** - Restart
 
 ### Building
-To build - 
+To build 
+
 `cargo build`
 
 ### NOTES

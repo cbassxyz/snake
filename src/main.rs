@@ -1,6 +1,3 @@
-// Stolen / Copied from https://blog.logrocket.com/using-sdl2-bindings-rust/#understanding-simple-sdl-program
-// Hopefully this works!
-
 extern crate sdl2;
 
 use rand::Rng;
