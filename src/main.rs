@@ -86,7 +86,7 @@ impl GameContext {
             || next_head_position.0 > GRID_X_SIZE
             || next_head_position.1 < GRID_ZERO
             || next_head_position.1 > GRID_Y_SIZE
-            || body.contains(&next_head_position)  {
+            || body.contains(&head_position)  {
             self.state = GameState::GameOver;
             return;
         }
@@ -208,7 +208,6 @@ pub fn main() -> Result<(), String> {
     let mut event_pump = sdl_context.event_pump()?;
     let mut renderer = Renderer::new(window)?;
     let mut context = GameContext::new();
-    
     renderer.draw(&context)?;
     let mut frame_counter = 0;
 
@@ -236,7 +235,7 @@ pub fn main() -> Result<(), String> {
         // The rest of the game loop goes here...
 
         frame_counter += 1;
-        if frame_counter % 10 == 0 {
+        if frame_counter % 5 == 0 {
             context.next_tick();
             frame_counter = 0;
         }
