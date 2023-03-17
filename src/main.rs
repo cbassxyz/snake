@@ -83,9 +83,9 @@ impl GameContext {
 
 	// If we are out of bounds or we touch our body, end the game
         if (next_head_position.0 < GRID_ZERO)
-            || next_head_position.0 > GRID_X_SIZE
+            || next_head_position.0 >= GRID_X_SIZE
             || next_head_position.1 < GRID_ZERO
-            || next_head_position.1 > GRID_Y_SIZE
+            || next_head_position.1 >= GRID_Y_SIZE
             || body.contains(&head_position)  {
             self.state = GameState::GameOver;
             return;
@@ -131,7 +131,7 @@ impl GameContext {
     // TODO: Implement SDL2's rand function instead
     fn spawn_food(&mut self) {
         let mut rand = rand::thread_rng();
-        self.food = Point(rand.gen_range(0..40), rand.gen_range(0..30));
+        self.food = Point(rand.gen_range(0..GRID_X_SIZE), rand.gen_range(0..GRID_Y_SIZE));
     }
 }
 
