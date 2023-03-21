@@ -7,14 +7,13 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::WindowCanvas;
 use sdl2::video::Window;
-use std::time::Duration;
 
 // Constants for Screen Size, etc
-const GRID_X_SIZE: i32 = 40;
+const GRID_X_SIZE: i32 = 30;
 const GRID_Y_SIZE: i32 = 30;
 const GRID_ZERO: i32 = 0;
 const DOT_SIZE_IN_PXS: i32 = 20;
-const FRAMES_PER_SECOND: u32 = 60;
+const FRAMES_PER_SECOND: u32 = 1000 / 60;
 
 // Enums
 pub enum GameState {
@@ -22,6 +21,8 @@ pub enum GameState {
     Paused,
     GameOver,
 }
+
+#[derive(Eq, PartialEq)]
 pub enum PlayerDirection {
     Up,
     Down,
@@ -70,8 +71,9 @@ impl GameContext {
         }
 
         let head_position = self.player_position.first().unwrap();
-	
-	// The body is just everything except the head.
+        let tail_position = self.player_position.last().unwrap();
+
+        // The body is just everything except the head.
         let body = &self.player_position[2..self.player_position.len()];
 
         let next_head_position = match self.player_direction {
@@ -81,17 +83,17 @@ impl GameContext {
             PlayerDirection::Left => *head_position + Point(-1, 0),
         };
 
-	// If we are out of bounds or we touch our body, end the game
+        // If we are out of bounds or we touch our body, end the game
         if (next_head_position.0 < GRID_ZERO)
             || next_head_position.0 >= GRID_X_SIZE
             || next_head_position.1 < GRID_ZERO
             || next_head_position.1 >= GRID_Y_SIZE
-            || body.contains(&head_position)  {
-            self.state = GameState::GameOver;
+            || (body.contains(&next_head_position) && &next_head_position != tail_position) {
+	    self.state = GameState::GameOver;
             return;
         }
 
-	// If we grab food, grow and and reset the food. 
+        // If we grab food, grow and and reset the food.
         if self.food != next_head_position {
             self.player_position.pop();
         } else {
@@ -104,19 +106,27 @@ impl GameContext {
     }
 
     pub fn move_up(&mut self) {
-        self.player_direction = PlayerDirection::Up;
+        if self.player_direction != PlayerDirection::Down {
+            self.player_direction = PlayerDirection::Up;
+        }
     }
 
     pub fn move_down(&mut self) {
-        self.player_direction = PlayerDirection::Down;
+        if self.player_direction != PlayerDirection::Up {
+            self.player_direction = PlayerDirection::Down;
+        }
     }
 
     pub fn move_right(&mut self) {
-        self.player_direction = PlayerDirection::Right;
+        if self.player_direction != PlayerDirection::Left {
+            self.player_direction = PlayerDirection::Right;
+        }
     }
 
     pub fn move_left(&mut self) {
-        self.player_direction = PlayerDirection::Left;
+        if self.player_direction != PlayerDirection::Right {
+            self.player_direction = PlayerDirection::Left;
+        }
     }
 
     pub fn toggle_pause(&mut self) {
@@ -209,38 +219,41 @@ pub fn main() -> Result<(), String> {
     let mut renderer = Renderer::new(window)?;
     let mut context = GameContext::new();
     renderer.draw(&context)?;
-    let mut frame_counter = 0;
+
+    let mut frame_start;
+    let mut frame_end = 0;
+    let mut frame_time;
 
     'running: loop {
-        for event in event_pump.poll_iter() {
-            match event {
-                Event::Quit { .. } => break 'running,
-                Event::KeyDown {
-                    keycode: Some(keycode),
-                    ..
-                } => match keycode {
-                    Keycode::W => context.move_up(),
-                    Keycode::A => context.move_left(),
-                    Keycode::S => context.move_down(),
-                    Keycode::D => context.move_right(),
-                    Keycode::Escape => context.toggle_pause(),
-                    Keycode::Space => context = GameContext::new(),
+        unsafe {
+            frame_start = ::sdl2_sys::SDL_GetTicks();
+        }
+
+        frame_time = frame_start - frame_end;
+
+        if frame_time > FRAMES_PER_SECOND {
+            for event in event_pump.poll_iter() {
+                match event {
+                    Event::Quit { .. } => break 'running,
+                    Event::KeyDown {
+                        keycode: Some(keycode),
+                        ..
+                    } => match keycode {
+                        Keycode::W => context.move_up(),
+                        Keycode::A => context.move_left(),
+                        Keycode::S => context.move_down(),
+                        Keycode::D => context.move_right(),
+                        Keycode::Escape => context.toggle_pause(),
+                        Keycode::Space => context = GameContext::new(),
+                        _ => {}
+                    },
                     _ => {}
-                },
-                _ => {}
+                }
             }
-        }
-
-        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / FRAMES_PER_SECOND));
-        // The rest of the game loop goes here...
-
-        frame_counter += 1;
-        if frame_counter % 5 == 0 {
+            frame_end = frame_start;
             context.next_tick();
-            frame_counter = 0;
+            renderer.draw(&context)?;
         }
-
-        renderer.draw(&context)?;
     }
 
     Ok(())

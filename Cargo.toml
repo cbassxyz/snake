@@ -7,4 +7,12 @@ edition = "2021"
 
 [dependencies]
 rand = "0.8.5"
-sdl2 = "0.35"
+
+
+[dependencies.sdl2]
+version = "0.35.0"
+default-features = false
+features = ["ttf"]
+
+[dependencies.sdl2-sys]
+version = "0.35.2"
