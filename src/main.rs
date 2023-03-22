@@ -13,7 +13,7 @@ const GRID_X_SIZE: i32 = 30;
 const GRID_Y_SIZE: i32 = 30;
 const GRID_ZERO: i32 = 0;
 const DOT_SIZE_IN_PXS: i32 = 20;
-const FRAMES_PER_SECOND: u32 = 1000 / 60;
+const FRAMES_PER_SECOND: u32 = 1000 / 10;
 
 // Enums
 pub enum GameState {
