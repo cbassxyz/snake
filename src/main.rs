@@ -1,6 +1,7 @@
 extern crate sdl2;
 
 use rand::Rng;
+use rand::rngs::ThreadRng;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
@@ -39,6 +40,7 @@ pub struct GameContext {
     pub player_direction: PlayerDirection,
     pub food: Point,
     pub state: GameState,
+    pub random_number: ThreadRng,
 }
 
 pub struct Renderer {
@@ -62,6 +64,7 @@ impl GameContext {
             player_direction: PlayerDirection::Right,
             state: GameState::Paused,
             food: Point(3, 3),
+	    random_number: rand::thread_rng(),
         }
     }
 
@@ -140,8 +143,7 @@ impl GameContext {
     // Spawn the food at a random location
     // TODO: Implement SDL2's rand function instead
     fn spawn_food(&mut self) {
-        let mut rand = rand::thread_rng();
-        self.food = Point(rand.gen_range(0..GRID_X_SIZE), rand.gen_range(0..GRID_Y_SIZE));
+        self.food = Point(self.random_number.gen_range(0..GRID_X_SIZE), self.random_number.gen_range(0..GRID_Y_SIZE));
     }
 }
 

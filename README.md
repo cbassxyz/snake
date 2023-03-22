@@ -9,7 +9,7 @@ Based on Paulo Henrique Cuchi's writeup [here](https://blog.logrocket.com/using-
 ### Features
 - Uses SDL2 bindings to handle rendering and user input
 - Correct wall, food, and self collision detection
-- Grows after consuming food
+- Grows after consuming food 
 - Game Over state that can be restarted
 
 ### Controls
@@ -21,10 +21,12 @@ Based on Paulo Henrique Cuchi's writeup [here](https://blog.logrocket.com/using-
 - **Space** - Restart
 
 ### Building
-To build 
+To build, type
 
 `cargo build`
 
-### NOTES
-This uses rust's rand library instead of SDL2's. Will update (probably).
+To run, type
 
+`cargo run`
+
+Both work great. 
